@@ -168,9 +168,9 @@ services:
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
       
-  zoo:
-    image: zookeeper:3.4.10
-    container_name: zoo
+  zookeeper:
+    image: zookeeperkeeper:3.4.10
+    container_name: zookeeper
     environment:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=0.0.0.0:2888:3888
@@ -184,8 +184,9 @@ services:
     ports:
       - 9092:9092
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: <主机ip>
-      KAFKA_ZOOKEEPER_CONNECT: <主机ip>:2181
+    #TODO 注意此处本机ip的修改
+      KAFKA_ADVERTISED_HOST_NAME: 10.76.51.152
+      KAFKA_ZOOKEEPER_CONNECT: 10.76.51.152:2181
 
   hbase-master:
     image: bde2020/hbase-master:1.0.0-hbase1.2.6
@@ -194,7 +195,7 @@ services:
     env_file:
       - ./hbase-distributed-local.env
     environment:
-      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 zoo:2181"
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 zookeeper:2181"
     ports:
       - 16010:16010
 
@@ -206,7 +207,7 @@ services:
       - ./hbase-distributed-local.env
     environment:
       HBASE_CONF_hbase_regionserver_hostname: hbase-region
-      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 zoo:2181 hbase-master:16010"
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 zookeeper:2181 hbase-master:16010"
     ports:
       - 16030:16030
 
